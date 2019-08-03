@@ -17,8 +17,8 @@ use diesel::{prelude::*, r2d2::ConnectionManager};
 use rocket::{response::content, Rocket, State};
 use serde_json::{json, Value};
 
-type DbConPool = r2d2::Pool<ConnectionManager<PgConnection>>;
-type DbCon = r2d2::PooledConnection<ConnectionManager<PgConnection>>;
+type DbConPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+type DbCon = r2d2::PooledConnection<ConnectionManager<SqliteConnection>>;
 
 #[get("/graphiql")]
 fn graphiql() -> content::Html<String> {
@@ -62,6 +62,6 @@ fn db_pool() -> DbConPool {
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     r2d2::Pool::builder()
         .max_size(10)
-        .build(ConnectionManager::<PgConnection>::new(database_url))
+        .build(ConnectionManager::<SqliteConnection>::new(database_url))
         .expect("failed to create db connection pool")
 }

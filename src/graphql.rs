@@ -80,7 +80,7 @@ fn user_connections(
     cursor: Option<Cursor>,
     page_size: i32,
     trail: &QueryTrail<'_, UserConnection, Walked>,
-    con: &PgConnection,
+    con: &SqliteConnection,
 ) -> QueryResult<UserConnection> {
     use crate::{models::pagination::*, schema::users};
 
@@ -130,11 +130,11 @@ fn user_connections(
 fn map_models_to_graphql_nodes<'a, T, M: Clone>(
     models: &[M],
     trail: &QueryTrail<'a, T, Walked>,
-    con: &PgConnection,
+    con: &SqliteConnection,
 ) -> Result<Vec<T>, diesel::result::Error>
 where
     T: EagerLoadAllChildren<QueryTrail<'a, T, Walked>>
-        + GraphqlNodeForModel<Model = M, Connection = PgConnection, Error = diesel::result::Error>,
+        + GraphqlNodeForModel<Model = M, Connection = SqliteConnection, Error = diesel::result::Error>,
 {
     let mut users = T::from_db_models(models);
     T::eager_load_all_children_for_each(&mut users, models, con, trail)?;
@@ -159,7 +159,7 @@ impl MutationFields for Mutation {
 #[eager_loading(
     model = "models::User",
     error = "diesel::result::Error",
-    connection = "PgConnection"
+    connection = "SqliteConnection"
 )]
 pub struct User {
     user: models::User,
@@ -171,7 +171,7 @@ pub struct User {
 #[eager_loading(
     model = "models::Country",
     error = "diesel::result::Error",
-    connection = "PgConnection"
+    connection = "SqliteConnection"
 )]
 pub struct Country {
     country: models::Country,

@@ -116,7 +116,7 @@ fn test_loading_users_with_countries() {
 #[factory(
     model = "User",
     table = "crate::schema::users",
-    connection = "PgConnection"
+    connection = "SqliteConnection"
 )]
 struct UserFactory<'a> {
     pub name: String,
@@ -136,7 +136,7 @@ impl Default for UserFactory<'_> {
 #[factory(
     model = "Country",
     table = "crate::schema::countries",
-    connection = "PgConnection"
+    connection = "SqliteConnection"
 )]
 struct CountryFactory {
     pub name: String,
@@ -178,9 +178,9 @@ fn make_request(client: &Client, query: &str, variables: Option<Value>) -> (Valu
 
 #[cfg(test)]
 fn test_db_pool() -> DbConPool {
-    let database_url = "postgres://localhost/graphql-app-example-test";
+    let database_url = "sqlite://db.sqlite";
     r2d2::Pool::builder()
         .max_size(1)
-        .build(ConnectionManager::<PgConnection>::new(database_url))
+        .build(ConnectionManager::<SqliteConnection>::new(database_url))
         .expect("failed to create db connection pool")
 }

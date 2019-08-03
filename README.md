@@ -1,21 +1,29 @@
 # Rust GraphQL example app
 
-This project provides a complete example how to setup a Rust GraphQL web server using the following libraries:
+based on [graphql-app-example](https://github.com/davidpdrsn/graphql-app-example)
 
-- [Rocket](https://rocket.rs) (web server)
-- [Diesel](http://diesel.rs) (database)
-- [Juniper](https://github.com/graphql-rust/juniper) (graphql)
-- [juniper-from-schema](https://github.com/davidpdrsn/juniper-from-schema) (graphql code generation)
-- [juniper-eager-loading](https://github.com/davidpdrsn/juniper-eager-loading) (eager loading to avoid N+1 query bugs)
+## Dependencies
+
+```sh
+# app dependencies
+sudo dnf install sqlite-devel sqlite
+# Additional dependencies to build diesel_cli
+sudo dnf install mysql-devel postgresql-devel
+cargo install diesel_cli
+```
 
 ## Running the app
 
-Create the (postgres) database and run migrations by running `bin/setup`. We create both a development and test database.
+Bootstrap the databases (only needs to be done once, or if you want to reset the dbs)
 
-Then compile and run the app
+```sh
+./bin/setup
+```
 
-```bash
-$ cargo run
+Start the app
+
+```sh
+cargo run
 ```
 
 Then go to <http://localhost:8000/graphiql>.

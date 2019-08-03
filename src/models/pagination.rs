@@ -1,4 +1,4 @@
-use diesel::pg::Pg;
+use diesel::sqlite::Sqlite;
 use diesel::prelude::*;
 use diesel::query_builder::*;
 use diesel::query_dsl::methods::LoadQuery;
@@ -32,9 +32,9 @@ impl<T> Paginated<T> {
         Paginated { per_page, ..self }
     }
 
-    pub fn load_and_count_pages<U>(self, conn: &PgConnection) -> QueryResult<(Vec<U>, i64)>
+    pub fn load_and_count_pages<U>(self, conn: &SqliteConnection) -> QueryResult<(Vec<U>, i64)>
     where
-        Self: LoadQuery<PgConnection, (U, i64)>,
+        Self: LoadQuery<SqliteConnection, (U, i64)>,
     {
         let results = self.load::<(U, i64)>(conn)?;
         let total = results.get(0).map(|x| x.1).unwrap_or(0);
@@ -47,13 +47,13 @@ impl<T: Query> Query for Paginated<T> {
     type SqlType = (T::SqlType, BigInt);
 }
 
-impl<T> RunQueryDsl<PgConnection> for Paginated<T> {}
+impl<T> RunQueryDsl<SqliteConnection> for Paginated<T> {}
 
-impl<T> QueryFragment<Pg> for Paginated<T>
+impl<T> QueryFragment<Sqlite> for Paginated<T>
 where
-    T: QueryFragment<Pg>,
+    T: QueryFragment<Sqlite>,
 {
-    fn walk_ast(&self, mut out: AstPass<Pg>) -> QueryResult<()> {
+    fn walk_ast(&self, mut out: AstPass<Sqlite>) -> QueryResult<()> {
         out.push_sql("SELECT *, COUNT(*) OVER () FROM (");
         self.query.walk_ast(out.reborrow())?;
         out.push_sql(") t LIMIT ");
